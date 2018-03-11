@@ -180,7 +180,7 @@ module.exports.createServer = function (config) {
                         if (!device) {
                             log.error('ERR | WS | Unknown device ', data.deviceid);
                         } else {
-                            device.state = data.params.switch;
+                            device.state = data.params.switch || data.params.switches;
                             device.conn = conn;
                             device.rawMessageLastUpdate = data;
                             device.rawMessageLastUpdate.timestamp = Date.now();
@@ -222,7 +222,7 @@ module.exports.createServer = function (config) {
                                 device.messages = device.messages.filter(function (item) {
                                     return item !== message;
                                 })
-                                device.state = message.params.switch;
+                                device.state = message.params.switch || message.params.switches;
                                 state.updateKnownDevice(device);
                                 log.trace('INFO | WS | APP | action has been accnowlaged by the device ' + JSON.stringify(data));
                             } else {
@@ -270,9 +270,7 @@ module.exports.createServer = function (config) {
             if (!d || (typeof d.conn == 'undefined')) return "disconnected";
             // if device has more then one buttons
             if(buttonId) {
-                console.log( d.rawMessageLastUpdate.params.switches
-                    .find(switchData => switchData.outlet == buttonId).switch)
-                return d.rawMessageLastUpdate.params.switches
+                return d.state
                     .find(switchData => switchData.outlet == buttonId)
                     .switch;
             }
