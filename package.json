@@ -14,9 +14,12 @@
     "url": "^0.11.0"
   },
   "repository": "github:mdopp/simple-sonoff-server",
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^1.17.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:dev": "nodemon ./sonoff.server.js"
   },
   "keywords": [
     "sonoff"

@@ -64,4 +64,14 @@ This Server keeps the connection to the sonoff devices, and must run permanently
 * /devices => list off all devices that are currently known to the server.
 * /devices/:deviceId/status => shows the status of the device 
 * /devices/:deviceId/on => turns the device "on" 
-* /devices/:deviceId/off => turns the device "on" 
+* /devices/:deviceId/off => turns the device "off"
+
+#### API to device with more then one buttons
+(Devices like [this](https://cdn.itead.cc/media/catalog/product/cache/2/image/9df78eab33525d08d6e5fb8d27136e95/t/1/t1_06.jpg))
+
+* /devices => list off all devices that are currently known to the server.
+* /devices/:deviceId/status/:buttonId => shows the status of the switch number buttonId on device
+* /devices/:deviceId/on/:buttonId => turns the switch on device to "on"
+* /devices/:deviceId/off/:buttonId => turns the switch on device to "off"
+
+(example: /devices/1000336242/off/0)

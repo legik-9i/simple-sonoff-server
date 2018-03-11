@@ -96,3 +96,45 @@ server.get('/devices', function (req, res) {
     log.log('GET | %s | %s ', req.method, req.url);
     res.json(devices.getConnectedDevices());
 });
+
+//returns an simple 0 or 1 for a known device with some buttons
+server.get('/devices/:deviceId/status/:buttonId', function (req, res) {
+    log.log('GET | %s | %s ', req.method, req.url);
+    const { deviceId, buttonId } = req.params;
+
+    var d = devices.getDeviceState(deviceId, buttonId);
+
+    if (!d || d == "disconnected") {
+        res.status(404).send('Sonoff device ' + req.params.deviceId + ' not found');
+    } else {
+        res.status(200).send(((d == 'on') ? '1' : '0'));
+    }
+});
+
+
+//switch the device with more then one buttons
+server.get('/devices/:deviceId/:state/:buttonId', function (req, res) {
+    log.log('GET | %s | %s ', req.method, req.url);
+    const { deviceId, buttonId, state} = req.params;
+
+    var d = devices.getDeviceState(deviceId, buttonId);
+
+    if (!d || d == "disconnected") {
+        res.status(404).send('Sonoff device ' + deviceId + ' not found');
+    } else {
+        switch (state.toUpperCase()) {
+            case "1":
+            case "ON":
+                res.sendStatus(200);
+                devices.turnOnDevice(deviceId, buttonId);
+                break;
+            case "0":
+            case "OFF":
+                res.sendStatus(200);
+                devices.turnOffDevice(deviceId, buttonId);
+                break;
+            default:
+                res.status(404).send(`Sonoff device ${deviceId} can not be switched to "${state}", only "ON" and "OFF" are supported currently`);
+        }
+    }
+});

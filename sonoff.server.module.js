@@ -264,22 +264,51 @@ module.exports.createServer = function (config) {
             });
         },
 
-        getDeviceState: (deviceId) => {
+        getDeviceState: (deviceId, buttonId) => {
             var d = state.getDeviceById(deviceId);
+
             if (!d || (typeof d.conn == 'undefined')) return "disconnected";
+            // if device has more then one buttons
+            if(buttonId) {
+                console.log( d.rawMessageLastUpdate.params.switches
+                    .find(switchData => switchData.outlet == buttonId).switch)
+                return d.rawMessageLastUpdate.params.switches
+                    .find(switchData => switchData.outlet == buttonId)
+                    .switch;
+            }
             return d.state;
         },
 
-        turnOnDevice: (deviceId) => {
+        turnOnDevice: (deviceId, buttonId) => {
             var d = state.getDeviceById(deviceId);
             if (!d || (typeof d.conn == 'undefined')) return "disconnected";
+            // if device has more then one buttons
+            if(buttonId) {
+                state.pushMessage({ action: 'update', value: {
+                    switches: [
+                        {switch: "on", outlet:+buttonId},
+                    ]
+                }, target: deviceId });
+                return 'on';
+            }
+
             state.pushMessage({ action: 'update', value: { switch: "on" }, target: deviceId });
             return "on";
         },
 
-        turnOffDevice: (deviceId) => {
+        turnOffDevice: (deviceId, buttonId) => {
             var d = state.getDeviceById(deviceId);
             if (!d || (typeof d.conn == 'undefined')) return "disconnected";
+            // if device has more then one buttons
+            if(buttonId) {
+                state.pushMessage({ action: 'update', value: {
+                    switches: [
+                        {switch: "off", outlet:+buttonId},
+                    ]
+                }, target: deviceId });
+                return 'off';
+            }
+
             state.pushMessage({ action: 'update', value: { switch: "off" }, target: deviceId });
             return "off";
         },
