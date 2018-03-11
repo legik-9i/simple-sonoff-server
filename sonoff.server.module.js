@@ -282,11 +282,9 @@ module.exports.createServer = function (config) {
             if (!d || (typeof d.conn == 'undefined')) return "disconnected";
             // if device has more then one buttons
             if(buttonId) {
-                state.pushMessage({ action: 'update', value: {
-                    switches: [
-                        {switch: "on", outlet:+buttonId},
-                    ]
-                }, target: deviceId });
+                const nextState = d.state
+                    .map(updateState(buttonId, 'on'));
+                state.pushMessage({ action: 'update', value: { switches: nextState }, target: deviceId });
                 return 'on';
             }
 
@@ -299,11 +297,9 @@ module.exports.createServer = function (config) {
             if (!d || (typeof d.conn == 'undefined')) return "disconnected";
             // if device has more then one buttons
             if(buttonId) {
-                state.pushMessage({ action: 'update', value: {
-                    switches: [
-                        {switch: "off", outlet:+buttonId},
-                    ]
-                }, target: deviceId });
+                const nextState = d.state
+                    .map(updateState(buttonId, 'off'));
+                state.pushMessage({ action: 'update', value: { switches: nextState }, target: deviceId });
                 return 'off';
             }
 
@@ -331,4 +327,12 @@ module.exports.createServer = function (config) {
             log.log("Stopped server");
         }
     }
+}
+
+
+const updateState = (buttonId, newState) => (oneButtonState) => {
+    if(oneButtonState.outlet == buttonId) {
+        oneButtonState.switch = newState;
+    }
+    return oneButtonState;
 }
